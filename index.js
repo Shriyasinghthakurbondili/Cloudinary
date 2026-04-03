@@ -8,6 +8,8 @@ var productRoutes = require("./Routes/ProductRoutes.js")
 
 var profileRoutes = require("./Routes/profileRoutes.js")
 
+var cartRoutes = require("./Routes/cartRoutes.js")
+
 var app = express()
 
 app.use(express.json())
@@ -15,6 +17,7 @@ app.use(express.json())
 app.use("/api/userRoutes", userRoutes)
 app.use("/api/productRoutes", productRoutes)
 app.use("/api/profileRoutes", profileRoutes)
+app.use("/api/cartRoutes",cartRoutes)
 
 connectToDatabase()
 
