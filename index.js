@@ -4,12 +4,13 @@ var express = require("express")
 const connectToDatabase = require("./database/db.js")
 
 var userRoutes = require("./Routes/userRoutes")
-var productRoutes = require("./Routes/ProductRoutes.js")
+var productRoutes = require("./Routes/ProductRoutes")
 
-var profileRoutes = require("./Routes/profileRoutes.js")
+var profileRoutes = require("./Routes/profileRoutes")
 
-var cartRoutes = require("./Routes/cartRoutes.js")
+var cartRoutes = require("./Routes/cartRoutes")
 
+var paymentRoutes = require("./Routes/paymentRoutes")
 var app = express()
 
 app.use(express.json())
@@ -18,7 +19,7 @@ app.use("/api/userRoutes", userRoutes)
 app.use("/api/productRoutes", productRoutes)
 app.use("/api/profileRoutes", profileRoutes)
 app.use("/api/cartRoutes",cartRoutes)
-
+app.use("/api/paymentRoutes", paymentRoutes)
 connectToDatabase()
 
 var port = process.env.PORT || 3000
