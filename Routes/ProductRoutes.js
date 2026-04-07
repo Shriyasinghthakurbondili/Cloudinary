@@ -15,14 +15,21 @@ var upload = require("../Middleware/imageMiddleware")
 var router = express.Router()
 
 // Users can view all products
+// router.get("/products", authMiddleware, getAllProducts)
+// Admin only
+// router.get("/products/:id", authMiddleware, adminMiddleware, getSingleProduct)
+// Admin only
+// router.post("/addproduct", authMiddleware, upload.single("image"), addNewProduct)
+// Admin only
+// router.put("/update/:id", authMiddleware, adminMiddleware, updateProduct)
+// Admin only
+// router.delete("/delete/:id", authMiddleware, adminMiddleware, deleteProduct)
+
 router.get("/products", authMiddleware, getAllProducts)
-// Admin only
-router.get("/products/:id", authMiddleware, adminMiddleware, getSingleProduct)
-// Admin only
+router.get("/products/:id", authMiddleware, getSingleProduct)
+
 router.post("/addproduct", authMiddleware, upload.single("image"), addNewProduct)
-// Admin only
 router.put("/update/:id", authMiddleware, adminMiddleware, updateProduct)
-// Admin only
 router.delete("/delete/:id", authMiddleware, adminMiddleware, deleteProduct)
 
 module.exports = router
