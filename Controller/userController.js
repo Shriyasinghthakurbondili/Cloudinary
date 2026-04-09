@@ -66,4 +66,4 @@ var login = async(req,res)=>{
 
 module.exports = {
     registerUser,login
-}
+}  
