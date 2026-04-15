@@ -20,6 +20,6 @@ var cartSchema = new mongoose.Schema({
     ]
 })
 
-var cart = mongoose.model("cart", cartSchema)
+var cart = mongoose.model.cart || mongoose.model("cart", cartSchema)
 
 module.exports = cart

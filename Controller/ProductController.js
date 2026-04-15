@@ -1,33 +1,79 @@
 
 var Product = require("../Model/ProductModel");
 const { uploadToCloudinary } = require("../helper/cloudinaryhelper");
-
-
-
-
+var {client} = require("../config/redisClient")
 
 var getAllProducts = async(req,res)=>{
     try{
-        var allProducts =  await Product.find()
-        console.log(req.user);
+
+        var cacheKey = "allproducts"
+
+        var cachedData = await client.get(cacheKey)
+
+        if(cachedData){
+            console.log("data from redis")
+            return res.status(200).json({
+                products : JSON.parse(cachedData)
+            })
+        }
+
+        var allProducts = await Product.find()
+        await client.setEx(cacheKey, 3600, JSON.stringify(allProducts))
+        console.log("data from mongodb")
+                         
         res.status(200).json({products: allProducts})
 
     }catch(error){
-        console.log("error",error);
+        console.log("error",error)
     }
 }
+
+
+
+
+// var getAllProducts = async(req,res)=>{
+//     try{
+//         var allProducts =  await Product.find()
+//         console.log(req.user);
+//         res.status(200).json({products: allProducts})
+
+//     }catch(error){
+//         console.log("error",error);
+//     }
+// }
 
 
 var getSingleProduct = async(req,res)=>{
     try{
-        var id = req.params.id 
-        var singleProduct = await  Product.findById(id)
-        res.status(200).json({singleProduct})
+        var id = req.params.id
+        var cacheKey =    `product_${id}`
+        const cachedData = await client.get(cacheKey)
+        if(cachedData){
+            return res.status(200).json({singleProduct: JSON.parse(cachedData)})
+        }
 
+        const singleProduct = await Product.findById(id)
+        await client.setEx(cacheKey, 60, JSON.stringify(singleProduct))
+        res.status(200).json(
+            {singleProduct}
+        )
     }catch(error){
-        console.log("error",error);
+        console.log("error",error)
     }
 }
+
+
+// var getSingleProduct = async(req,res)=>{
+//     try{
+//         var id = req.params.id 
+//         var singleProduct = await  Product.findById(id)
+//         res.status(200).json({singleProduct})
+
+//     }catch(error){
+//         console.log("error",error);
+//     }
+// }
+
 
 var addNewProduct = async(req,res)=>{
     try{
@@ -65,6 +111,8 @@ var updateProduct = async(req,res)=>{
         },{
             new : true
         })
+        await client.del("allProducts")
+        await client.del(`product:${id}`)
         res.status(201).json({message : "product updated",data : update})
 
     }catch(error){
@@ -77,7 +125,8 @@ var deleteProduct = async(req,res)=>{
         var id = req.params.id 
         var deletePro = await Product.findByIdAndDelete(id)
         res.status(200).json({message : "product deleted"})
-
+        await client.del("allProducts")
+        await client.del(`product:${id}`)
     }catch(error){
         console.log("error",error);
     }

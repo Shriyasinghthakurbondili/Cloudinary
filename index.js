@@ -40,12 +40,16 @@ var profileRoutes = require("./Routes/profileRoutes");
 var cartRoutes = require("./Routes/cartRoutes");
 var paymentRoutes = require("./Routes/paymentRoutes");
 
+ const {connectRedis} = require("./config/redisClient.js")
+
 var app = express();
 
 // ✅ ADD THIS
-app.use(cors({
-  origin: "http://localhost:5173"
-}));
+// app.use(cors({
+//   origin: "http://localhost:5173"
+// }));
+
+app.use(cors())
 
 app.use(express.json());
 
@@ -56,6 +60,8 @@ app.use("/api/cartRoutes", cartRoutes);
 app.use("/api/paymentRoutes", paymentRoutes);
 
 connectToDatabase();
+
+connectRedis()
 
 var port = process.env.PORT || 3000;
 

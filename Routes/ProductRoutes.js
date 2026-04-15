@@ -25,7 +25,7 @@ var router = express.Router()
 // Admin only
 // router.delete("/delete/:id", authMiddleware, adminMiddleware, deleteProduct)
 
-router.get("/products", authMiddleware, getAllProducts)
+router.get("/products", getAllProducts)
 router.get("/products/:id", authMiddleware, getSingleProduct)
 
 router.post("/addproduct", authMiddleware, upload.single("image"), addNewProduct)
