@@ -286,6 +286,7 @@ var productRoutes = require("./Routes/ProductRoutes");
 var profileRoutes = require("./Routes/profileRoutes");
 var cartRoutes = require("./Routes/cartRoutes");
 var paymentRoutes = require("./Routes/paymentRoutes");
+var orderRoutes = require("./Routes/orderRoutes.js")
 
  const {connectRedis} = require("./config/redisClient.js")
  const {createLimiters} = require("./Middleware/rateLimiter.js")
@@ -310,17 +311,17 @@ const startServer = async(req,res) =>{
   const { productLimiter, adminLimiter }  = createLimiters()
 
   // Apply Limiters
-  app.use("/api/productRoutes", productLimiter, productLimiter)
+  app.use("/api/productRoutes", productLimiter, productRoutes)
   app.use("/api/adminRoutes", adminLimiter) //optional for admin
 
 
   //Routes 
   
 app.use("/api/userRoutes", userRoutes);
-app.use("/api/productRoutes", productRoutes);
 app.use("/api/profileRoutes", profileRoutes);
 app.use("/api/cartRoutes", cartRoutes);
 app.use("/api/paymentRoutes", paymentRoutes);
+app.use("/api/orderRoutes",orderRoutes)
 
 await connectToDatabase();
 
