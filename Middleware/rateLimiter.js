@@ -1,0 +1,103 @@
+// // const rateLimit = require("express-rate-limit");
+// // const RedisStore = require("rate-limit-redis").default;
+// // const { client } = require("../config/redisClient");
+
+// // const createLimiters = () => {
+
+// //   const productLimiter = rateLimit({
+// //     store: new RedisStore({
+// //       sendCommand: (...args) => client.sendCommand(...args), // ✅ FIXED
+// //     }),
+// //     windowMs: 1 * 60 * 1000,
+// //     max: 5,
+// //     message: {
+// //       success: false,
+// //       message: "Too many requests, please try again later",
+// //     },
+// //   });
+
+// //   const adminLimiter = rateLimit({
+// //     store: new RedisStore({
+// //       sendCommand: (...args) => client.sendCommand(...args), // ✅ FIXED
+// //     }),
+// //     windowMs: 1 * 60 * 1000,
+// //     max: 20,
+// //     message: {
+// //       success: false,
+// //       message: "Too many admin actions, slow down",
+// //     },
+// //   });
+
+// //   return { productLimiter, adminLimiter };
+// // };
+
+// // module.exports = { createLimiters };
+
+// const rateLimit = require("express-rate-limit");
+// const RedisStore = require("rate-limit-redis").default;
+// const { client } = require("../config/redisClient");
+
+// const createLimiters = () => {
+//   const productLimiter = rateLimit({
+//     store: new RedisStore({
+//       sendCommand: (...args) => client.sendCommand(...args),
+//     }),
+//     windowMs: 60 * 1000,
+//     max: 5,
+//     message: {
+//       success: false,
+//       message: "Too many requests",
+//     },
+//   });
+
+//   const adminLimiter = rateLimit({
+//     store: new RedisStore({
+//       sendCommand: (...args) => client.sendCommand(...args),
+//     }),
+//     windowMs: 60 * 1000,
+//     max: 20,
+//     message: {
+//       success: false,
+//       message: "Too many admin requests",
+//     },
+//   });
+
+//   return { productLimiter, adminLimiter };
+// };
+
+// module.exports = { createLimiters }; 
+const rateLimit = require("express-rate-limit");
+const RedisStore = require("rate-limit-redis").default;
+const { client } = require("../config/redisClient");
+
+// ✅ wrap inside function
+const createLimiters = () => {
+
+  const productLimiter = rateLimit({
+    store: new RedisStore({
+      sendCommand: (...args) => client.sendCommand(args),
+    }),
+    windowMs: 1 * 60 * 1000,
+    max: 5,
+    message: {
+      success: false,
+      message: "Too many requests, please try again later",
+    },
+  });
+
+  const adminLimiter = rateLimit({
+    store: new RedisStore({
+      sendCommand: (...args) => client.sendCommand(args),
+    }),
+    windowMs: 1 * 60 * 1000,
+    max: 20,
+    message: {
+      success: false,
+      message: "Too many admin actions, slow down",
+    },
+  });
+
+  return { productLimiter, adminLimiter };
+};
+
+module.exports = { createLimiters };

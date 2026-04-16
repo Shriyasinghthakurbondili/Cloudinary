@@ -260,59 +260,120 @@
 //     verifyPaymentController
 // } 
 
+// var Product = require("../Model/ProductModel")
+// var Order = require("../Model/orderModel")
+// var Cart = require("../Model/cartModel")
+
+// var verifyPaymentController = async (req, res) => {
+//     try {
+//         var userId = req.user.userId
+
+//         console.log("USER ID:", userId)
+
+//         var cart = await Cart.findOne({ user: userId })
+
+//         console.log("CART:", cart)
+
+//         if (!cart || cart.items.length === 0) {
+//             return res.status(400).json({
+//                 message: "Cart is empty"
+//             })
+//         }
+
+//         var totalAmount = 0
+
+//         for (var item of cart.items) {
+//             var product = await Product.findById(item.product)
+
+//             if (!product) continue
+
+//             totalAmount += product.price * item.quantity
+//         }
+
+//         var newOrder = await Order.create({
+//             userId,
+//             items: cart.items,
+//             totalAmount,
+//             status: "paid",
+//             paymentId: req.body.razorpay_payment_id
+//         })
+
+//         // clear cart
+//         cart.items = []
+//         await cart.save()
+
+//         res.status(200).json({
+//             message: "Payment successful and order placed",
+//             order: newOrder
+//         })
+
+//     } catch (error) {
+//         console.log("ERROR:", error)
+//         res.status(500).json({
+//             message: "Internal Server Error"
+//         })
+//     }
+// }
+
+// module.exports = { verifyPaymentController }  
+
 var Product = require("../Model/ProductModel")
 var Order = require("../Model/orderModel")
 var Cart = require("../Model/cartModel")
 
 var verifyPaymentController = async (req, res) => {
-    try {
-        var userId = req.user.userId
+  try {
+    var userId = req.user.userId
 
-        console.log("USER ID:", userId)
+    console.log("USER ID:", userId)
 
-        var cart = await Cart.findOne({ user: userId })
+    // ✅ FIXED (important)
+    var cart = await Cart.findOne({ userId: userId })
 
-        console.log("CART:", cart)
+    console.log("CART:", cart)
 
-        if (!cart || cart.items.length === 0) {
-            return res.status(400).json({
-                message: "Cart is empty"
-            })
-        }
-
-        var totalAmount = 0
-
-        for (var item of cart.items) {
-            var product = await Product.findById(item.product)
-
-            if (!product) continue
-
-            totalAmount += product.price * item.quantity
-        }
-
-        var newOrder = await Order.create({
-            userId,
-            items: cart.items,
-            totalAmount,
-            status: "paid",
-            paymentId: req.body.razorpay_payment_id
-        })
-
-        // clear cart
-        cart.items = []
-        await cart.save()
-
-        res.status(200).json({
-            message: "Payment successful and order placed",
-            order: newOrder
-        })
-
-    } catch (error) {
-        console.log("ERROR:", error)
-        res.status(500).json({
-            message: "Internal Server Error"
-        })
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Cart is empty"
+      })
     }
+
+    var totalAmount = 0
+
+    for (var item of cart.items) {
+      var product = await Product.findById(item.product)
+
+      if (!product) continue
+
+      totalAmount += product.price * item.quantity
+    }
+
+    var newOrder = await Order.create({
+      userId,
+      items: cart.items,
+      totalAmount,
+      status: "paid",
+      paymentId: req.body.razorpay_payment_id || "test_payment"
+    })
+
+    // ✅ clear cart
+    cart.items = []
+    await cart.save()
+
+    res.status(200).json({
+      success: true,
+      message: "Payment successful and order placed",
+      order: newOrder
+    })
+
+  } catch (error) {
+    console.log("ERROR:", error)
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
+    })
+  }
 }
 
 module.exports = { verifyPaymentController }

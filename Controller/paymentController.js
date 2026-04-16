@@ -1,55 +1,123 @@
-// // // // var Cart = require("../Model/CartModel")
-// // // // var Product = require("../Model/ProductModel")
-// // // // var Order = require("../Model/orderModel")
-// // // // var razorpay = require("../config/razorpay")
+// // // // // var Cart = require("../Model/CartModel")
+// // // // // var Product = require("../Model/ProductModel")
+// // // // // var Order = require("../Model/orderModel")
+// // // // // var razorpay = require("../config/razorpay")
 
-// // // // var getOrderController = async(req,res)=>{
-// // // //     try{
-// // // //         var userId = req.user.id
-// // // //         var order = await Order.find({userId})
-// // // //         res.status(200).json({
-// // // //             message : "order fetched succesfully",
-// // // //             data : order
-// // // //         })
-// // // //     }catch(error){
-// // // //         console.log("error",error)
-// // // //         res.status(500).json({message : "Internal Server Error"})
-// // // //     }
-// // // // }
-// // // // var paymentController = async(req,res)=>{
-// // // //       try{
-// // // //         var userId = req.user.id
-// // // //         var cart = await Cart.findOne({userId})
+// // // // // var getOrderController = async(req,res)=>{
+// // // // //     try{
+// // // // //         var userId = req.user.id
+// // // // //         var order = await Order.find({userId})
+// // // // //         res.status(200).json({
+// // // // //             message : "order fetched succesfully",
+// // // // //             data : order
+// // // // //         })
+// // // // //     }catch(error){
+// // // // //         console.log("error",error)
+// // // // //         res.status(500).json({message : "Internal Server Error"})
+// // // // //     }
+// // // // // }
+// // // // // var paymentController = async(req,res)=>{
+// // // // //       try{
+// // // // //         var userId = req.user.id
+// // // // //         var cart = await Cart.findOne({userId})
 
-// // // //         if(!cart || cart.items.length === 0){
-// // // //             return res.status(200).json({
-// // // //                 message : "cart is empty"
-// // // //             })
-// // // //         }
+// // // // //         if(!cart || cart.items.length === 0){
+// // // // //             return res.status(200).json({
+// // // // //                 message : "cart is empty"
+// // // // //             })
+// // // // //         }
 
-// // // //         var totalAmount = 0 
+// // // // //         var totalAmount = 0 
 
-// // // //         for(var item of cart.items){
-// // // //             var product = await Product.findById(item.product)
-// // // //             totalAmount += product.price * item.quantity
-// // // //         }
+// // // // //         for(var item of cart.items){
+// // // // //             var product = await Product.findById(item.product)
+// // // // //             totalAmount += product.price * item.quantity
+// // // // //         }
 
-// // // //         var order = await razorpay.orders.create({
-// // // //             amount : totalAmount * 100,
-// // // //             currency : "INR"
-// // // //         })
-// // // //         res.status(200).json({
-// // // //             message : "checkout created", order,totalAmount 
-// // // //         })
-// // // //       }catch(error){
-// // // //         console.log("error",error)
-// // // //         res.status(500).json({"message" : "Internal Server Error"})
-// // // //       }
-// // // // }
+// // // // //         var order = await razorpay.orders.create({
+// // // // //             amount : totalAmount * 100,
+// // // // //             currency : "INR"
+// // // // //         })
+// // // // //         res.status(200).json({
+// // // // //             message : "checkout created", order,totalAmount 
+// // // // //         })
+// // // // //       }catch(error){
+// // // // //         console.log("error",error)
+// // // // //         res.status(500).json({"message" : "Internal Server Error"})
+// // // // //       }
+// // // // // }
 
-// // // // module.exports = {
-// // // //     paymentController , getOrderController
-// // // // }
+// // // // // module.exports = {
+// // // // //     paymentController , getOrderController
+// // // // // }
+
+// // // // // var Cart = require("../Model/CartModel")
+// // // // // var Product = require("../Model/ProductModel")
+// // // // // var Order = require("../Model/orderModel")
+// // // // // var razorpay = require("../config/razorpay")
+
+// // // // // // get orders
+// // // // // var createOrder = async (req, res) => {
+// // // // //     try {
+// // // // //         var userId = req.user.userId   // ✅ FIXED
+
+// // // // //         var order = await Order.find({ userId })
+
+// // // // //         res.status(200).json({
+// // // // //             message: "order fetched successfully",
+// // // // //             data: order
+// // // // //         })
+
+// // // // //     } catch (error) {
+// // // // //         console.log("error", error)
+// // // // //         res.status(500).json({ message: "Internal Server Error" })
+// // // // //     }
+// // // // // }
+
+// // // // // // checkout
+// // // // // var verifyPaymentController = async (req, res) => {
+// // // // //     try {
+// // // // //         var userId = req.user.userId   // ✅ FIXED
+
+// // // // //         var cart = await Cart.findOne({ userId })
+
+// // // // //         if (!cart || cart.items.length === 0) {
+// // // // //             return res.status(400).json({
+// // // // //                 message: "cart is empty"
+// // // // //             })
+// // // // //         }
+
+// // // // //         var totalAmount = 0
+
+// // // // //         for (var item of cart.items) {
+// // // // //             var product = await Product.findById(item.product)
+
+// // // // //             if (!product) continue   // ✅ PRICE FIX
+
+// // // // //             totalAmount += product.price * item.quantity
+// // // // //         }
+
+// // // // //         var order = await razorpay.orders.create({
+// // // // //             amount: totalAmount * 100,
+// // // // //             currency: "INR"
+// // // // //         })
+
+// // // // //         res.status(200).json({
+// // // // //             message: "checkout created",
+// // // // //             order,
+// // // // //             totalAmount
+// // // // //         })
+
+// // // // //     } catch (error) {
+// // // // //         console.log("error", error)
+// // // // //         res.status(500).json({ message: "Internal Server Error" })
+// // // // //     }
+// // // // // }
+
+// // // // // module.exports = {
+// // // // //     createOrder,
+// // // // //     verifyPaymentController
+// // // // // }
 
 // // // // var Cart = require("../Model/CartModel")
 // // // // var Product = require("../Model/ProductModel")
@@ -58,198 +126,214 @@
 
 // // // // // get orders
 // // // // var createOrder = async (req, res) => {
-// // // //     try {
-// // // //         var userId = req.user.userId   // ✅ FIXED
-
-// // // //         var order = await Order.find({ userId })
-
-// // // //         res.status(200).json({
-// // // //             message: "order fetched successfully",
-// // // //             data: order
-// // // //         })
-
-// // // //     } catch (error) {
-// // // //         console.log("error", error)
-// // // //         res.status(500).json({ message: "Internal Server Error" })
-// // // //     }
+// // // //   try {
+// // // //     res.status(200).json({
+// // // //       message: "order fetched successfully",
+// // // //       data: order
+// // // //     })
+// // // //   } catch (error) {
+// // // //     console.log("error", error)
+// // // //     res.status(500).json({ message: "Internal Server Error" })
+// // // //   }
 // // // // }
 
 // // // // // checkout
 // // // // var verifyPaymentController = async (req, res) => {
-// // // //     try {
-// // // //         var userId = req.user.userId   // ✅ FIXED
+// // // //   try {
+// // // //     var userId = req.body.userId
+// // // //     // var userId = "69ce9d8520c015cc40c22d7c" // ✅ already correct
 
-// // // //         var cart = await Cart.findOne({ userId })
+// // // //     console.log("USER ID:", userId)
+// // // //     var cart = await Cart.findOne({ userId })
 
-// // // //         if (!cart || cart.items.length === 0) {
-// // // //             return res.status(400).json({
-// // // //                 message: "cart is empty"
-// // // //             })
-// // // //         }
-
-// // // //         var totalAmount = 0
-
-// // // //         for (var item of cart.items) {
-// // // //             var product = await Product.findById(item.product)
-
-// // // //             if (!product) continue   // ✅ PRICE FIX
-
-// // // //             totalAmount += product.price * item.quantity
-// // // //         }
-
-// // // //         var order = await razorpay.orders.create({
-// // // //             amount: totalAmount * 100,
-// // // //             currency: "INR"
-// // // //         })
-
-// // // //         res.status(200).json({
-// // // //             message: "checkout created",
-// // // //             order,
-// // // //             totalAmount
-// // // //         })
-
-// // // //     } catch (error) {
-// // // //         console.log("error", error)
-// // // //         res.status(500).json({ message: "Internal Server Error" })
+// // // //     console.log("CART:", cart)
+// // // //     if (!cart || cart.items.length === 0) {
+// // // //       return res.status(400).json({
+// // // //         message: "cart is empty"
+// // // //       })
 // // // //     }
+
+// // // //     var totalAmount = 0
+
+// // // //     // ✅ FIXED: moved product fetch inside loop
+// // // //     for (var item of cart.items) {
+// // // //       var product = await Product.findById(item.product)
+
+// // // //       if (!product) continue
+
+// // // //       totalAmount += product.price * item.quantity
+// // // //     }
+
+// // // //     // ✅ FIXED: added receipt (optional but good)
+// // // //     var order = await razorpay.orders.create({
+// // // //       amount: totalAmount * 100,   // ✅ important
+// // // //       currency: "INR",
+// // // //       receipt: "receipt_" + Date.now()
+// // // //     })
+
+// // // //     res.status(200).json({
+// // // //       message: "checkout created",
+// // // //       order,
+// // // //       totalAmount
+   
+// // // //     })
+
+// // // //   } catch (error) {
+// // // //     console.log("🔥 error", error)   // ✅ better debug
+// // // //     res.status(500).json({ message: "Internal Server Error" })
+// // // //   }
 // // // // }
 
 // // // // module.exports = {
-// // // //     createOrder,
-// // // //     verifyPaymentController
-// // // // }
+// // // //   createOrder,
+// // // //   verifyPaymentController
+// // // // }  
 
-// // // var Cart = require("../Model/CartModel")
 // // // var Product = require("../Model/ProductModel")
-// // // var Order = require("../Model/orderModel")
+// // // var Cart = require("../Model/CartModel")
 // // // var razorpay = require("../config/razorpay")
 
-// // // // get orders
 // // // var createOrder = async (req, res) => {
-// // //   try {
-// // //     res.status(200).json({
-// // //       message: "order fetched successfully",
-// // //       data: order
-// // //     })
-// // //   } catch (error) {
-// // //     console.log("error", error)
-// // //     res.status(500).json({ message: "Internal Server Error" })
-// // //   }
+// // //     try {
+// // //         var userId = req.user.userId
+       
+// // //         console.log("USER:", req.user)
+// // //         console.log("USER ID:", userId)
+// // //         var cart = await Cart.findOne({ userId })
+
+// // //         if (!cart || cart.items.length === 0) {
+// // //             return res.status(400).json({
+// // //                 message: "Cart is empty"
+// // //             })
+// // //         }
+
+// // //         var totalAmount = 0
+
+// // //         for (var item of cart.items) {
+// // //             var product = await Product.findById(item.product)
+
+// // //             if (!product) continue
+
+// // //             totalAmount += product.price * item.quantity
+// // //         }
+
+// // //         var order = await razorpay.orders.create({
+// // //             amount: totalAmount * 100,
+// // //             currency: "INR",
+// // //             receipt: "receipt_" + Date.now()
+// // //         })
+
+// // //         res.status(200).json({
+// // //             message: "Checkout created",
+// // //             order,
+// // //             totalAmount
+// // //         })
+
+// // //     } catch (error) {
+// // //         console.log("ERROR:", error)
+// // //         res.status(500).json({
+// // //             message: "Internal Server Error"
+// // //         })
+// // //     }
 // // // }
 
-// // // // checkout
-// // // var verifyPaymentController = async (req, res) => {
-// // //   try {
-// // //     var userId = req.body.userId
-// // //     // var userId = "69ce9d8520c015cc40c22d7c" // ✅ already correct
+// // // module.exports = { createOrder } 
 
-// // //     console.log("USER ID:", userId)
-// // //     var cart = await Cart.findOne({ userId })
-
-// // //     console.log("CART:", cart)
-// // //     if (!cart || cart.items.length === 0) {
-// // //       return res.status(400).json({
-// // //         message: "cart is empty"
-// // //       })
-// // //     }
-
-// // //     var totalAmount = 0
-
-// // //     // ✅ FIXED: moved product fetch inside loop
-// // //     for (var item of cart.items) {
-// // //       var product = await Product.findById(item.product)
-
-// // //       if (!product) continue
-
-// // //       totalAmount += product.price * item.quantity
-// // //     }
-
-// // //     // ✅ FIXED: added receipt (optional but good)
-// // //     var order = await razorpay.orders.create({
-// // //       amount: totalAmount * 100,   // ✅ important
-// // //       currency: "INR",
-// // //       receipt: "receipt_" + Date.now()
-// // //     })
-
-// // //     res.status(200).json({
-// // //       message: "checkout created",
-// // //       order,
-// // //       totalAmount
-   
-// // //     })
-
-// // //   } catch (error) {
-// // //     console.log("🔥 error", error)   // ✅ better debug
-// // //     res.status(500).json({ message: "Internal Server Error" })
-// // //   }
-// // // }
-
-// // // module.exports = {
-// // //   createOrder,
-// // //   verifyPaymentController
-// // // }  
-
-// // var Product = require("../Model/ProductModel")
-// // var Cart = require("../Model/CartModel")
 // // var razorpay = require("../config/razorpay")
+// // const Cart = require("../Model/CartModel")
+// // const Product = require("../Model/ProductModel")
+
+
 
 // // var createOrder = async (req, res) => {
-// //     try {
-// //         var userId = req.user.userId
-       
-// //         console.log("USER:", req.user)
-// //         console.log("USER ID:", userId)
-// //         var cart = await Cart.findOne({ userId })
+// //   try {
+// //     const userId = req.body.userId
 
-// //         if (!cart || cart.items.length === 0) {
-// //             return res.status(400).json({
-// //                 message: "Cart is empty"
-// //             })
-// //         }
+// //     console.log("REQ.USER:", req.user)
 
-// //         var totalAmount = 0
+// //     const cart = await Cart.findOne({ userId })
 
-// //         for (var item of cart.items) {
-// //             var product = await Product.findById(item.product)
-
-// //             if (!product) continue
-
-// //             totalAmount += product.price * item.quantity
-// //         }
-
-// //         var order = await razorpay.orders.create({
-// //             amount: totalAmount * 100,
-// //             currency: "INR",
-// //             receipt: "receipt_" + Date.now()
-// //         })
-
-// //         res.status(200).json({
-// //             message: "Checkout created",
-// //             order,
-// //             totalAmount
-// //         })
-
-// //     } catch (error) {
-// //         console.log("ERROR:", error)
-// //         res.status(500).json({
-// //             message: "Internal Server Error"
-// //         })
+// //     if (!cart || cart.items.length === 0) {
+// //       return res.status(400).json({ message: "Cart is empty" })
 // //     }
+
+// //     let totalAmount = 0
+
+// //     for (let item of cart.items) {
+// //       const product = await Product.findById(item.product)
+// //       if (!product) continue
+
+// //       totalAmount += product.price * item.quantity
+// //     }
+
+// //     const order = await razorpay.orders.create({
+// //       amount: totalAmount * 100,
+// //       currency: "INR",
+// //       receipt: "receipt_" + Date.now()
+// //     })
+
+// //     res.status(200).json({
+// //       success: true,
+// //       order,
+// //       totalAmount
+// //     })
+
+// //   } catch (error) {
+// //   console.log("FULL ERROR 👉", error)   // 👈 ADD THIS
+// //   res.status(500).json({ message: "Internal Server Error" })
 // // }
+// //   }
+
 
 // // module.exports = { createOrder } 
+// // const Razorpay = require("razorpay")
+// // const Cart = require("../Model/cartModel")
+// // const Product = require("../Model/ProductModel")
 
-// var razorpay = require("../config/razorpay")
-// const Cart = require("../Model/CartModel")
+// // var createOrder = async (req, res) => {
+// //   try {
+// //     console.log("BODY:", req.body)
+
+// //     const userId = req.body.userId
+
+// //     const cart = await Cart.findOne({ userId })
+
+// //     if (!cart || cart.items.length === 0) {
+// //       return res.status(400).json({ message: "Cart is empty" })
+// //     }
+
+// //     let totalAmount = 0
+
+// //     for (let item of cart.items) {
+// //       const product = await Product.findById(item.product)
+
+// //       if (!product) continue
+
+// //       totalAmount += product.price * item.quantity
+// //     }
+
+// //     // 🔥 TEST FIX (NO RAZORPAY)
+// //     return res.status(200).json({
+// //       success: true,
+// //       totalAmount,
+// //       message: "Backend working"
+// //     })
+
+// //   } catch (error) {
+// //     console.log("ERROR:", error)
+// //     res.status(500).json({ message: error.message })
+// //   }
+// // }
+
+// // module.exports = { createOrder }
+
+// const Razorpay = require("razorpay")
+// const Cart = require("../Model/cartModel")
 // const Product = require("../Model/ProductModel")
 
-
-
-// var createOrder = async (req, res) => {
+// const paymentController = async (req, res) => {
 //   try {
 //     const userId = req.body.userId
-
-//     console.log("REQ.USER:", req.user)
 
 //     const cart = await Cart.findOne({ userId })
 
@@ -266,63 +350,66 @@
 //       totalAmount += product.price * item.quantity
 //     }
 
-//     const order = await razorpay.orders.create({
-//       amount: totalAmount * 100,
-//       currency: "INR",
-//       receipt: "receipt_" + Date.now()
-//     })
-
 //     res.status(200).json({
 //       success: true,
-//       order,
-//       totalAmount
+//       totalAmount,
+//       message: "Backend working"
 //     })
 
 //   } catch (error) {
-//   console.log("FULL ERROR 👉", error)   // 👈 ADD THIS
-//   res.status(500).json({ message: "Internal Server Error" })
-// }
+//     console.log("ERROR:", error)
+//     res.status(500).json({ message: error.message })
 //   }
+// }
 
+// // ✅ add this also (dummy for now)
+// const getOrderController = (req, res) => {
+//   res.send("Order fetched")
+// }
 
-// module.exports = { createOrder } 
-const Razorpay = require("razorpay")
-const Cart = require("../Model/cartModel")
-const Product = require("../Model/ProductModel")
+// module.exports = {
+//   paymentController,
+//   getOrderController
+// }  
+const Cart = require("../Model/cartModel");
+const Product = require("../Model/ProductModel");
 
-var createOrder = async (req, res) => {
+const paymentController = async (req, res) => {
   try {
-    console.log("BODY:", req.body)
+    const userId = req.body.userId;
 
-    const userId = req.body.userId
-
-    const cart = await Cart.findOne({ userId })
+    const cart = await Cart.findOne({ userId });
 
     if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: "Cart is empty" })
+      return res.status(400).json({ message: "Cart is empty" });
     }
 
-    let totalAmount = 0
+    let totalAmount = 0;
 
     for (let item of cart.items) {
-      const product = await Product.findById(item.product)
+      const product = await Product.findById(item.product);
+      if (!product) continue;
 
-      if (!product) continue
-
-      totalAmount += product.price * item.quantity
+      totalAmount += product.price * item.quantity;
     }
 
-    // 🔥 TEST FIX (NO RAZORPAY)
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       totalAmount,
-      message: "Backend working"
-    })
+      message: "Checkout success",
+    });
 
   } catch (error) {
-    console.log("ERROR:", error)
-    res.status(500).json({ message: error.message })
+    console.log("ERROR:", error);
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
-module.exports = { createOrder }
+const getOrderController = (req, res) => {
+  res.send("Order fetched");
+};
+
+module.exports = {
+  paymentController,
+  getOrderController,
+};
